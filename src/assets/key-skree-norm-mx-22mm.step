@@ -9,8 +9,8 @@ FILE_DESCRIPTION(
 /* implementation_level */ '2;1');
 
 FILE_NAME(
-/* name */ '22mm-norm.step',
-/* time_stamp */ '2025-11-28T21:58:23-05:00',
+/* name */ 'key-skree-norm-mx-22mm.step',
+/* time_stamp */ '2025-12-02T15:26:15-05:00',
 /* author */ (''),
 /* organization */ (''),
 /* preprocessor_version */ 'ST-DEVELOPER v20.1',

@@ -32,6 +32,8 @@ enumeration('PART', {
   33: 'choc-v1-amoeba-hillside',
   35: 'skree-norm-mx-ff',
   36: 'skree-con-mx-ff',
+  38: 'skree-norm-mx-22mm',
+  39: 'skree-con-mx-22mm',
 
   // You wouldn't put many of these on a keyboard.
   16: 'ec11',
@@ -50,6 +52,7 @@ enumeration('PART', {
   30: 'thqwgd001',
   32: 'meh01',
   34: 'oled-168x144-1.26in-keydio-vista508',
+  37: 'splitball',
 
   // Old stuff no one should be using.
   110: 'old-mx',

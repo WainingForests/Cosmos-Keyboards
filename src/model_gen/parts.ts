@@ -292,6 +292,7 @@ async function main() {
     if (socket == 'blank') continue // These don't get a part
     for (const variantURL of variantURLs(socket)) {
       nParts += 1
+      console.log('Checking', socket)
       const glbName = join(targetDir, 'socket-' + socket + variantURL + '.glb')
       const stepName = '.' + PART_INFO[socket].stepFile.replace('.step', variantURL + '.step')
       const partName = join(targetDir, 'splitpart-' + socket + variantURL + '.glb')
@@ -302,8 +303,10 @@ async function main() {
         console.log(`Warning: could not generate ${socket}${variantURL} since its file was not present in the filesystem`)
         console.log('This is OK as long as the models you generate do not include this part.')
       } else if (!glbStat || glbStat.mtime < stepStat.mtime) {
+        console.log('Going to convert', socket)
         partTasks.push({ socket, glbName, stepName, variantURL })
       } else if (toSplit.includes(socket) && (!partStat || partStat.mtime < stepStat.mtime)) {
+        console.log('Going to split', socket)
         partTasks.push({ socket, glbName, stepName, variantURL })
       }
     }
