@@ -30,10 +30,10 @@ enumeration('PART', {
   26: 'niz',
   31: 'choc-pumpkin',
   33: 'choc-v1-amoeba-hillside',
-  35: 'skree-norm-mx-ff',
-  36: 'skree-con-mx-ff',
-  38: 'skree-norm-mx-22mm',
-  39: 'skree-con-mx-22mm',
+  35: 'mx-skree-norm-ff',
+  36: 'mx-skree-con-ff',
+  38: 'mx-skree-norm-22mm',
+  39: 'mx-skree-con-22mm',
 
   // You wouldn't put many of these on a keyboard.
   16: 'ec11',

@@ -351,11 +351,11 @@ export const PART_INFO: Record<CuttleKey['type'], PartInfo> = {
       'Allocates an empty space on the keyboard. Useful filling in gaps and changing the keyboard boundary. <a target="_blank" href="https://ryanis.cool/cosmos/docs/tips-and-tricks/#shaper-keys">Read more in the docs</a>.',
     icon: 'shaper',
   },
-  'skree-con-mx-ff': {
+  'mx-skree-con-ff': {
     partName: 'MX FF con',
     bomName: 'MX-Compatible Switch',
     category: 'Sockets',
-    stepFile: '/src/assets/key-con-mx-ff.step',
+    stepFile: '/src/assets/key-mx-skree-con-ff.step',
     partOverride: MX_PART,
     socketSize: [18, 18, 4.7],
     partBottom: [],
@@ -367,11 +367,11 @@ export const PART_INFO: Record<CuttleKey['type'], PartInfo> = {
     icon: 'mx',
     bomIcon: 'switch',
   },
-  'skree-norm-mx-ff': {
+  'mx-skree-norm-ff': {
     partName: 'MX FF norm',
     bomName: 'MX-Compatible Switch',
     category: 'Sockets',
-    stepFile: '/src/assets/key-norm-mx-ff.step',
+    stepFile: '/src/assets/key-mx-skree-norm-ff.step',
     partOverride: MX_PART,
     singlePartForVariants: true,
     socketSize: [18, 18, 4.7],
@@ -384,11 +384,11 @@ export const PART_INFO: Record<CuttleKey['type'], PartInfo> = {
     icon: 'mx',
     bomIcon: 'switch',
   },
-  'skree-con-mx-22mm': {
+  'mx-skree-con-22mm': {
     partName: 'MX 22mm con',
     bomName: 'MX-Compatible Switch',
     category: 'Sockets',
-    stepFile: '/src/assets/key-skree-con-mx-22mm.step',
+    stepFile: '/src/assets/key-mx-skree-con-22mm.step',
     partOverride: MX_PART,
     socketSize: [18, 18, 4.7],
     partBottom: [],
@@ -400,11 +400,11 @@ export const PART_INFO: Record<CuttleKey['type'], PartInfo> = {
     icon: 'mx',
     bomIcon: 'switch',
   },
-  'skree-norm-mx-22mm': {
+  'mx-skree-norm-22mm': {
     partName: 'MX 22mm norm',
     bomName: 'MX-Compatible Switch',
     category: 'Sockets',
-    stepFile: '/src/assets/key-skree-norm-mx-22mm.step',
+    stepFile: '/src/assets/key-mx-skree-norm-22mm.step',
     partOverride: MX_PART,
     singlePartForVariants: true,
     socketSize: [18, 18, 4.7],
