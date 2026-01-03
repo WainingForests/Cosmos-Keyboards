@@ -116,7 +116,7 @@ If you cut any of these PCBs off, they effectively turn into minature Plum Twist
 
 ## Revision History
 
-**v1.1: Useful Fixes**
+**v1.1: Useful Fixes (currently sold)**
 
 - Rerouted the PCB so only a minimum of 2 rows is required to connect everything (before 3 rows were needed).
 - Fattened power and GND traces so LEDs can be run brighter

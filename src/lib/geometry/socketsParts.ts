@@ -1,4 +1,4 @@
-import type { CuttleBlankKey, TrackballVariant, TrackpadCirqueVariant } from '$target/cosmosStructs'
+import type { CuttleBlankKey, TrackballVariant, TrackpadCirqueVariant, TrackpadProcyonVariant } from '$target/cosmosStructs'
 import type { CuttleKey } from '../worker/config'
 
 const MX_BOTTOM = box(14, 14, 8.5)
@@ -631,6 +631,22 @@ export const PART_INFO: Record<CuttleKey['type'], PartInfo> = {
     icon: 'oled',
     description: DESC_DISPLAY,
   },
+  'oled-128x64-0.96-aliexpress': {
+    partName: 'Generic 128x64 0.96" OLED',
+    bomName: () => 'Generic 128x64 0.96" OLED',
+    category: 'Displays',
+    stepFile: '/target/key-oled-128x64-0.96-aliexpress.step',
+    socketSize: () => [27.4, 27.4, 2.9] as PartSize,
+    partBottom: () => [box(27.3, 27.3, 3.9)],
+    variants: {
+      size: ['27x27'],
+    },
+    encodeVariant: makeEncodeVariant('oled-128x64-0.96-aliexpress', { size: 2 }),
+    decodeVariant: makeDecodeVariant('oled-128x64-0.96-aliexpress', { size: 2 }),
+    numPins: () => ({ i2c: true }),
+    icon: 'oled',
+    description: '0.96" I2C display available in all sorts of variations on Aliexpress. Use the approximate outer dimensions of the PCB to choose the right variant.',
+  },
   'trackball': {
     partName: 'Trackball',
     bomName: (v: Variant) => `${v.size || '25–55mm'} Trackball`,
@@ -752,6 +768,25 @@ export const PART_INFO: Record<CuttleKey['type'], PartInfo> = {
     icon: 'knob',
     description: 'A small circular trackpad. These only support a single touch (no multi-touch gestures), but you can still do a lot with them.',
   },
+  'trackpad-procyon': {
+    partName: 'Procyon Trackpad',
+    bomName: (v: Variant) => `Procyon ${v.size || '42x50/57x80'} Trackpad`,
+    category: 'Trackballs & Trackpads',
+    stepFile: '/target/key-trackpad-procyon.step',
+    socketSize: (v: Variant) => ({
+      '42x50': [42.1, 50.1, 4.5] as PartSize,
+      '57x80': [57.1, 80.1, 4.5] as PartSize,
+    }[v.size as TrackpadProcyonVariant['size'] || '42x50']),
+    partBottom: () => [],
+    variants: {
+      size: ['42x50', '57x80'],
+    },
+    encodeVariant: makeEncodeVariant('trackpad-procyon', { size: 2 }),
+    decodeVariant: makeDecodeVariant('trackpad-procyon', { size: 2 }),
+    numPins: () => ({ i2c: true }),
+    icon: 'knob',
+    description: 'A small rectangular trackpad that connects through I2C. These support multi-touch gestures (e.g. 2-finger scrolling). Designed by George Norton.',
+  },
   'joystick-joycon-adafruit': {
     partName: 'Adafruit Mini Thumbstick',
     bomName: 'Adafruit Mini Thumbstick (Joycon style, #5628)',
@@ -788,6 +823,17 @@ export const PART_INFO: Record<CuttleKey['type'], PartInfo> = {
     description:
       'A 5-way switch supporting 4 cardinal directions (no diagonals) and a center click. 3D printable caps are available from <a href="https://github.com/wolfwood/navcaps">the navcaps project.</a>',
   },
+  'joystick-joycon-nintendo': {
+    partName: 'Nintendo Joycon Joystick',
+    bomName: 'Nintendo Joycon Joysticks',
+    category: 'Joysticks',
+    stepFile: '/src/assets/key-joystick-joycon-nintendo.step',
+    socketSize: [25.000, 22.900, 4.75],
+    partBottom: [box(19.00, 17.00, 7.00)],
+    numPins: { matrix: 5, gpio: 3 },
+    icon: 'joystick',
+    description: 'A small joystick from Nintendo for gaming or moving the mouse.',
+  },
 }
 
 const CATEGORY_SORT = [
@@ -805,7 +851,8 @@ export const sortedCategories = [...new Set(Object.values(PART_INFO).map((p) => 
 // ------------------------------------------------------------------------------------------------------
 // TYPES
 
-type PartSize = [number, number, number] | { radius: number; sides: number; height: number }
+type PartSize = [number, number, number] | { radiusX: number; radiusY: number; sides: number; height: number }
+type ShortcutPartSize = PartSize | { radius: number; sides: number; height: number }
 type Variant = Record<string, any>
 export type BomItem = { item: string; icon: string; count: number; info?: string }
 type Pins = {
@@ -822,14 +869,14 @@ type Pins = {
 
 type PartInfoNonVariant = {
   bomName: string
-  socketSize: PartSize | ((k: CuttleKey) => PartSize)
+  socketSize: ShortcutPartSize | ((k: CuttleKey) => ShortcutPartSize)
   partBottom: [number, number, number][][]
   extraBomItems?: Record<string, BomItem>
   numPins?: Pins
 }
 type PartInfoVariant = {
   bomName: (v: Variant) => string
-  socketSize: (v: Variant, k: CuttleKey) => PartSize
+  socketSize: (v: Variant, k: CuttleKey) => ShortcutPartSize
   partBottom: (v: Variant) => [number, number, number][][]
   variants: Record<string, string[]>
   decodeVariant: (n: number) => Variant
@@ -871,11 +918,22 @@ export function variantURL(key: CuttleKey) {
   ).join('-').toLowerCase()
 }
 
-export function socketSize(k: CuttleKey): PartSize {
+function truePartSize(k: CuttleKey, size: ShortcutPartSize, withMargin: boolean): PartSize {
+  const theSize = 'radius' in size ? { radiusX: size.radius, radiusY: size.radius, sides: size.sides, height: size.height } : size
+  if (k.type == 'blank') return theSize
+  if (withMargin) {
+    const mx = k.marginX || 0
+    const my = k.marginY || 0
+    if ('radiusX' in theSize) return { ...theSize, radiusX: theSize.radiusX + mx, radiusY: theSize.radiusY + my }
+    return [theSize[0] + mx * 2, theSize[1] + my * 2, theSize[2]]
+  }
+  return theSize
+}
+export function socketSize(k: CuttleKey, withMargin = true): PartSize {
   const info = PART_INFO[k.type]
-  if ('variants' in info) return info.socketSize(k.variant!, k)
-  if (typeof info.socketSize == 'function') return info.socketSize(k)
-  return info.socketSize
+  if ('variants' in info) return truePartSize(k, info.socketSize(k.variant!, k), withMargin)
+  if (typeof info.socketSize == 'function') return truePartSize(k, info.socketSize(k), withMargin)
+  return truePartSize(k, info.socketSize, withMargin)
 }
 export function socketHeight(k: CuttleKey): number {
   const size = socketSize(k)

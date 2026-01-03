@@ -20,6 +20,10 @@ If you'd like to run the dev servers for the generator and docs simultaneously, 
 
 ### Quickstart, in Detail
 
+!!! tip "Make on Windows"
+
+    If you're using Windows, be sure to use `bun make` or `npm run nodemake` instead of `make`. These commands will use Cosmos's built-in cross platform make runner, which translates *nix commands into things Windows can run.
+
 The `make quickstart` command recommended in the README bundles together several useful commands in the `Makefile`:
 
 ```bash
@@ -255,6 +259,8 @@ poolDisplay('oled-128x32-0.91in-dfrobot', {
 })
 ```
 
+If you have a multiple variants, call `poolDisplay` for each variant and pass the variant configuration as the third argument.
+
 Change `oled-128x32-0.91in-dfrobot` to the name you've given your socket. You'll need to specify just `stepFile` (don't add a `partOverride`) when you configure the pair in `socketsParts.ts`.
 
 The numbers listed within `DisplayProps` are measurements of the display taken with calipers. All measurements are in millimeters.
@@ -270,6 +276,40 @@ The numbers listed within `DisplayProps` are measurements of the display taken w
 - `displayRounding`: How much the corners of the display are rounded.
 
 Don't forget to edit `src/proto/cosmosStructs.ts` and add your socket/part to the `enumeration('PART', {` declaration. You'll need to give your part a unique number used to identify it in the URL. Switches get numbers from 1–15, and everything else uses 16–109.
+
+#### Trackpads
+
+Cosmos also includes a parametric trackpad socket generator, which works extremely similarly to the OLED/LCD one. Call the `poolTrackpad` function to use it.
+
+```typescript
+poolTrackpad('trackpad-procyon', {
+  trackpadLongSideWidth: 50,
+  trackpadShortSideWidth: 42,
+  offsetFromLeftLongSide: 4,
+  offsetFromRightLongSide: 4,
+  offsetFromBottomShortSide: 5,
+  offsetFromTopShortSide: 5,
+  trackpadThickness: 1,
+  pcbThickness: 1.5,
+  supportThickness: 2,
+  trackpadRounding: 2,
+}, { size: '42x50' })
+```
+
+That last argument is the variant you are generating. If your part has no variants, omit it.
+
+The numbers in `TrackpadProps` are measurements of the trackpad taken with calipers (or based on the datasheet). All measurements are in millimeters.
+
+- `trackpadLongSideWidth`: Length of the long side of the trackpad
+- `trackpadShortSideWidth`: Length of the short side of the trackpad
+- `offsetFromLeftLongSide`: How far underneath the bottom (from the left long side of the trackpad) that the support should extend
+- `offsetFromRightLongSide`: How far underneath the bottom (from the right long side of the trackpad) that the support should extend
+- `offsetFromTopShortSide`: How far underneath the bottom (from the top short side of the trackpad) that the support should extend
+- `offsetFromBottomShortSide`: How far underneath the bottom (from the bottom short side of the trackpad) that the support should extend
+- `trackpadThickness`: How thick the trackpad surface is (excluding PCB)
+- `pcbThickness`: How thick the trackpad PCB is
+- `supportThickness`: How thick to make the support underneatht he trackpad that holds it in place
+- `trackpadRounding`: How much the corners of the trackpad are rounded.
 
 ### Contributing Microcontrollers
 
@@ -290,7 +330,7 @@ If you'd like to follow an example, [@semickolon's pull request](https://github.
 
     Follow the following conventions: the board's short edge is the X axis, the long edge is the Y axis, and the top of the board faces +Z. The board should be centered on the X axis and the side with the connector should be touching the X axis (Y=0), so that most of the board is below the X axis (Y < 0). The bottom of the microcontroller should touching the XY plane. This is illustrated in the screenshot below.
 
-    ![A microcontroller in blender demonstrating the blow conventions](../assets/microcontroller.png){ width=400 .center }
+    ![A microcontroller in Blender demonstrating the below conventions](../assets/microcontroller.png){ width=400 .center }
 
     In Blender, make sure to export with "Y axis up" unchecked. GLB files use the convention that the Y axis points up, but in Cosmos the convention is Z points up.
 
@@ -356,6 +396,47 @@ If you wish to only preview documentation instead of the entire site, you can fo
 
 4. Edit the documentation in the `docs/docs` folder.
 
+### Local with Docker
+
+If you have any problems with the local installation, you can try using docker. This should mitigate dependency conflicts.
+
+1. Install Docker
+2. Create a file with the name "Dockerfile" in the root directory of the project
+3. Put the following content in there
+
+```Dockerfile
+FROM squidfunk/mkdocs-material:9.5
+
+RUN pip install mkdocs-awesome-pages-plugin==2.9.2 \
+  mkdocs-rss-plugin==1.9.0 \
+  lxml==4.9.3
+
+ENTRYPOINT ["/sbin/tini", "--", "mkdocs"]
+CMD ["serve", "--dev-addr=0.0.0.0:8000"]
+```
+
+4. Run `docker build . -t your-name/mkdocs` in the root directory
+5. Rename/delete the existing docker-compose.yml and create a new docker-compose.yml. Make sure to exclude the new compose and the renaming of the old one from your commits.
+6. Add the following content
+
+```yaml
+version: '3'
+services:
+  mkdocs:
+    image: your-name/mkdocs
+    ports:
+      - "8005:8000"
+    volumes:
+      - ./:/docs
+    stdin_open: true
+    tty: true
+```
+
+7. Execute `docker compose up -d` in the root directory
+8. Go to [localhost:8005](localhost:8005)
+
+!!! tip "The port can be changed in the docker docker compose."
+
 ### Adding Images
 
 All images for the documentation are placed in the `docs/assets` folder. To embed an image in Markdown, use the format
@@ -419,7 +500,7 @@ To embed videos that are meant to behave like animated GIFs (i.e. they autoplay 
 ![type:video](../assets/animated.mp4){ autoplay }
 ```
 
-When the docs are built, all the videos are transcoded to mp4 and webm. All you should worry about is that the dimensions of the video are not excessively large.
+When the docs are built, all the videos are compressed and transcoded to mp4 and webm. All you should worry about is that the dimensions of the video are not excessively large.
 
 ### Adding Pages
 

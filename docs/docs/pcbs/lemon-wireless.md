@@ -1,10 +1,15 @@
 # Lemon Wireless Microcontroller
 
+!!! info "What's with the Resistors?"
+
+    On recent shipments of Lemon Wireless v0.3 I've begun including 5.1kΩ resistors. They're required if you're planning on using RGB LEDs with the microcontroller. See the [LEDs section of the troubleshooting guide](#leds-not-working-fix-for-v03-or-earlier) for more details.
+
 The Lemon Wireless is an nRF52840-based microcontroller for split keyboards with a USB-C port, power switch, JST battery connector, a VIK connector, and two FPC connectors for connecting column-flex PCBs. If you use column-flex PCBs and VIK-compatible peripherals, it's possible to build a wireless split keyboard without soldering any wires!
 
 If you haven't already, I suggest you check out the [Lemon Landing page](https://ryanis.cool/cosmos/lemon/) to learn more.
 
---8<-- "docs/docs/pcbs/.shared/info.md"
+--8<-- "docs/docs/pcbs/.shared/flex-info.md"
+--8<-- "docs/docs/pcbs/.shared/vik-info.md"
 
 ## Pinout
 
@@ -336,8 +341,8 @@ I haven't contributed this board upstream yet since I don't know how popular thi
      */
     #define WIRE_INTERFACES_COUNT 1
 
-    #define PIN_WIRE_SDA         (22)
-    #define PIN_WIRE_SCL         (23)
+    #define PIN_WIRE_SDA         (18)
+    #define PIN_WIRE_SCL         (19)
 
     // QSPI Pins
     #define PIN_QSPI_SCK         27
@@ -415,7 +420,29 @@ For connection issues with ZMK, I recommend you take a look at the [ZMK Connecti
 
 If you are having pairing issues after programming _for the first time_, you likely are having issues with the device you are pairing to. Try pairing to another device and see if issues persist.
 
-If you are having pairing issues after you have changed the program and re-flashed, try [building a reset firmware](https://zmk.dev/docs/troubleshooting/connection-issues#building-a-reset-firmware) and flashing it. I also once heard flashing the opposite side's firmware then re-flashing your desired side's firmware works.
+If you are having pairing issues after you have changed the program and re-flashed, try flashing the [reset firmware](https://github.com/rianadon/peaMK/releases/download/latest/settings_reset-cosmos_lemon_wireless-zmk.uf2) to clear all settings including Bluetooth profiles. I also once heard flashing the opposite side's firmware then re-flashing your desired side's firmware works.
+
+### LEDs Not Working (Fix for v0.3 or Earlier)
+
+If you are using the Wireless Lemon with a Pumpkin Patch PCB that is v0.3 or earlier, solder a 5.1kΩ resistor between the RGB* and VDDH pins, as shown in the image below.
+
+![Wireless Lemon with 5.1kohm resistor](../../assets/lemon_wireless_resistor.png){ width=200 .center }
+
+I've tested resistors between 2.2kΩ and 6.8kΩ, but even 1kΩ should do. Smaller resistors will yield more improvement but increased current draw (e.g. 1kΩ would about 3.4mA of current draw).
+
+!!! info "Why this works"
+
+    The level shifter used in all designs up to and including v0.3 uses an open drain converter with a pullup. This means that the transition from low to high of the signals is unfortunately very suceptible to the wire's capacitance.  The close spacing of the wires in the Pumpkin Patch PCB creates enough parasitic capacitance to make the edges in the LED signal too slow for the addressable LEDs to pick up.
+
+    Reducing the 10kΩ pullup resistor used on the design to 5kΩ or less makes the edges fast enough to be noticed by the LED. My recommendation is 5.1kΩ in parallel with the onboard resistor, which gives 3.4kΩ of effective pullup resistance.
+
+    Note: The current draw estimation comes from the LED signal being low about 75% of the time, in which case the resistor is dissipating a current of 0.75*5V/(1/10k + 1/chosen R).
+
+If your LEDs are still not working, I recommend downloading the PeaMK firmware onto your Lemon to eliminate software issues. Then check that the LEDs have power and that the first LED's data input pin is electrically connected to the RGB* pin.
+
+If you get flashing LEDs with this method, the more foolproof fix is to remove the level shifting circuitry (the sot23-package mosfet closest to the pumpkins connector and the resistor by the vik connector, highlighted in red below). Then, instead of adding a resistor between RGB* and VDDH, wire between RGB* and a spare I/O on the microcontroller. Make sure to change the RGB pin in the firmware. You can also wire from RGB* to P0.26 on the nRF52840 module (7th from bottom left).
+
+![Wireless Lemon with regions to desolder highlighted in red](../../assets/lemon_wireless_desolder.png){ width=300 .center }
 
 ## PCB Drawing and Dimensions
 

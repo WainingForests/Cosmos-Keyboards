@@ -4,7 +4,8 @@ The Lemon Wired is a RP2040-based microcontroller for split keyboards with two U
 
 If you haven't already, I suggest you check out the [Lemon Landing page](https://ryanis.cool/cosmos/lemon/) to learn more.
 
---8<-- "docs/docs/pcbs/.shared/info.md"
+--8<-- "docs/docs/pcbs/.shared/flex-info.md"
+--8<-- "docs/docs/pcbs/.shared/vik-info.md"
 
 ## Pinout
 
@@ -416,12 +417,14 @@ I haven't contributed this board upstream yet since I don't know how popular thi
     #define PIN_SERIAL2_RX (31u)
 
     // SPI
-    #define PIN_SPI0_MISO  (20u)
-    #define PIN_SPI0_MOSI  (19u)
-    #define PIN_SPI0_SCK   (18u)
-    #define PIN_SPI0_SS    (17u)
+    #define __SPI0_DEVICE  spi1
+    #define PIN_SPI0_MISO  (12u)
+    #define PIN_SPI0_MOSI  (15u)
+    #define PIN_SPI0_SCK   (14u)
+    #define PIN_SPI0_SS    (13u)
 
     // Not pinned out
+    #define __SPI1_DEVICE  spi0
     #define PIN_SPI1_MISO  (31u)
     #define PIN_SPI1_MOSI  (31u)
     #define PIN_SPI1_SCK   (31u)
@@ -429,11 +432,11 @@ I haven't contributed this board upstream yet since I don't know how popular thi
 
     // Wire
     #define __WIRE0_DEVICE i2c1
-    #define PIN_WIRE0_SDA  (2u)
-    #define PIN_WIRE0_SCL  (3u)
+    #define PIN_WIRE0_SDA  (18u)
+    #define PIN_WIRE0_SCL  (19u)
     #define __WIRE1_DEVICE i2c0
-    #define PIN_WIRE1_SDA  (24u)
-    #define PIN_WIRE1_SCL  (25u)
+    #define PIN_WIRE1_SDA  (31u)
+    #define PIN_WIRE1_SCL  (31u)
 
     #define SERIAL_HOWMANY (2u)
     #define SPI_HOWMANY    (1u)
@@ -448,6 +451,8 @@ I haven't contributed this board upstream yet since I don't know how popular thi
     ```
 
     After modifying these files, restart Arduino IDE. You should now see Cosmos Lemon Wired listed as the last option when choosing a board through **Tools -> Board -> Raspberry Pi Pico -> Cosmos Lemon Wireled**.
+
+Because I2C1 and SPI1 are the only two buses you'll probably use, I've mapped them to `Wire` and `SPI` in Arduino (drop the 1). They are set up to by default follow the offical Lemon Wired pinout.
 
 --8<-- "docs/docs/pcbs/.shared/vik.md"
 
@@ -470,6 +475,12 @@ In rare cases (maybe this is a Tahoe-specific bug?), I've seen the prompt to all
 The configurations that Cosmos and PeaMK are built around have `SPLIT_USB_DETECT` enabled and `SPLIT_USB_TIMEOUT` set to the default of 2000. This means the microcontroller will prevent itself as a USB device for 2 seconds, and if the computer denies the connection, its USB will turn off and the microcontroller will go into peripheral mode (i.e. the half that does _not_ connect to your computer). In theory this means you have 2 seconds to click the "Allow accessory to connect" button.
 
 If the dialog goes away before you can press it, temporarily [change the "Allow Accessories to Connect" setting](https://support.apple.com/en-us/102282#settings) from "Ask for New Accessories" to "Automatically Allow When Unlocked". You can change it back after the microcontroller is successfully connected.
+
+### LEDs not Working
+
+There have been cases where LEDs on a Pumpkin Patch PCB have not turned on when the Wired Lemon was been plugged into USB ports with higher than normal voltages (at least 5.4V). If you are sure that your USB port has this high of a voltage, then you should follow the steps in the [Wireless Lemon troubleshooting section](lemon-wireless.md#leds-not-working-fix-for-v03-and-below), but instead use a supplemental 10kΩ resistor (as the Wired Lemon internally uses a 5.1kΩ as its pullup).
+
+Otherwise, your LEDs might not be turning on if the LED power relay is not engaged. Check that the VRGB pin is really getting 5V and that GPIO11 is low.
 
 ## PCB Drawing and Dimensions
 
