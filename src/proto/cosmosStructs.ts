@@ -34,6 +34,8 @@ enumeration('PART', {
   36: 'mx-skree-con-ff',
   38: 'mx-skree-norm-22mm',
   39: 'mx-skree-con-22mm',
+  40: 'choc-v1-skree-norm-ff',
+  41: 'choc-v1-skree-con-ff',
 
   // You wouldn't put many of these on a keyboard.
   16: 'ec11',
