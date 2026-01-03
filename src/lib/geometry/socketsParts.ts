@@ -663,6 +663,17 @@ export const PART_INFO: Record<CuttleKey['type'], PartInfo> = {
     icon: 'oled',
     description: DESC_DISPLAY,
   },
+  'skree-skreen': {
+    partName: 'Skree Skreen SMP',
+    bomName: 'skree skreen SMP',
+    category: 'Displays',
+    stepFile: '/src/assets/oled-skree-skreen.step',
+    socketSize: [17.8, 39.7, 4.7],
+    partBottom: [box(17, 39, 1)],
+    numPins: { spi: 'input-only' },
+    icon: 'oled',
+    description: 'Custom Board for Skree Skreen',
+  },
   'trackball': {
     partName: 'Trackball',
     bomName: (v: Variant) => `${v.size || '25–55mm'} Trackball`,
@@ -819,6 +830,17 @@ export const PART_INFO: Record<CuttleKey['type'], PartInfo> = {
     icon: 'joystick',
     description:
       'A 5-way switch supporting 4 cardinal directions (no diagonals) and a center click. 3D printable caps are available from <a href="https://github.com/wolfwood/navcaps">the navcaps project.</a>',
+  },
+  'skree-azoteq-tps65': {
+    partName: 'Skree Azoteq TPS65',
+    bomName: 'Skree Azoteq TPS65',
+    category: 'Trackballs & Trackpads',
+    stepFile: '/src/assets/trackpad-skree-azoteq-tps65.step',
+    socketSize: [68, 51, 4],
+    partBottom: [box(67, 50, 2)],
+    numPins: () => ({ i2c: true }),
+    icon: 'knob',
+    description: 'Custom Skree design mount for Azoteq TSP65 with adhesive areas',
   },
 }
 
