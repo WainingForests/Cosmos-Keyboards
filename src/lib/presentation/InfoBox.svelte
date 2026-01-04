@@ -1,13 +1,10 @@
 <script lang="ts">
   import Icon from './Icon.svelte'
   import { mdiAlertCircleOutline } from '@mdi/js'
-
-  let clazz = ''
-  export { clazz as class }
 </script>
 
 <div
-  class="max-w-[32rem] text-sm mb-1 bg-pink-50 dark:bg-pink-400/10 dark:border-gray-900 mx-[-0.5rem] px-2 py-2 rounded flex gap-3 relative {clazz}"
+  class="max-w-[32rem] text-sm mb-1 bg-pink-50 dark:bg-pink-400/10 dark:border-gray-900 mx-[-0.5rem] px-2 py-2 rounded flex gap-3 relative"
 >
   <div>
     <Icon path={mdiAlertCircleOutline} size="20" class="text-pink-600" />

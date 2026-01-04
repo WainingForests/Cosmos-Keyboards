@@ -13,7 +13,6 @@ import {
   bezierPatch,
   type CriticalPoints,
   joinWalls,
-  keyCriticalPoints,
   lineToCurve,
   loftCurves,
   makeLine,
@@ -28,7 +27,6 @@ import {
   wallSurfaces,
   wallSurfacesInner,
   wallSurfacesOuter,
-  webThickness,
 } from './geometry'
 import { bezierFace, BezierSketch, BezierSketcher, CompBezierSurface } from './modeling/bezier'
 import { makeCacher } from './modeling/cacher'
@@ -259,35 +257,18 @@ export function webSolid(c: Cuttleform, geo: Geometry) {
   }
 
   // Make walls for key well
-  // Also filler for keys with margin
   let i = 0
-  topCPts.forEach((poly, k) => {
-    const key = geo.c.keys[k]
-    if (key.type !== 'blank' && (key.marginX || key.marginY)) {
-      const topPtsWithoutMargin = keyCriticalPoints(geo.c, key, geo.keyHolesTrsfs[k], 0, false)
-      const botPtsWithoutMargin = topPtsWithoutMargin.map(t => t.pretranslated(0, 0, -webThickness(geo.c, key)))
-
-      for (let j = 0; j < poly.length; j++) {
-        const n = (j + 1) % poly.length
-        surface.addQuad(topPts[i + n], topPts[i + j], topPtsWithoutMargin[j], topPtsWithoutMargin[n])
-        surface.addQuad(botPts[i + j], botPts[i + n], botPtsWithoutMargin[n], botPtsWithoutMargin[j])
-        surface.addQuad(topPtsWithoutMargin[n], topPtsWithoutMargin[j], botPtsWithoutMargin[j], botPtsWithoutMargin[n])
-        if (topSplines[i + j] && topSplines[i + j][i + n]) { // Add outer walls if margin lies on a wall
-          surface.addPatch(loftCurves(topSplines[i + j][i + n]!, bottomSplines[i + j][i + n]!))
-        }
-      }
-    } else {
-      // Iterate through each side of the wall in pairs
-      for (let j = 0; j < poly.length; j++) {
-        const a = i + j
-        const b = i + ((j + 1) % poly.length)
-        if (triangleMap[a] && triangleMap[a][b]) {
-          surface.addQuad(botPts[a], botPts[b], topPts[b], topPts[a])
-        }
+  for (const poly of topCPts) {
+    // Iterate through each side of the wall in pairs
+    for (let j = 0; j < poly.length; j++) {
+      const a = i + j
+      const b = i + ((j + 1) % poly.length)
+      if (triangleMap[a] && triangleMap[a][b]) {
+        surface.addQuad(botPts[a], botPts[b], topPts[b], topPts[a])
       }
     }
     i += poly.length
-  })
+  }
 
   return surface
 }

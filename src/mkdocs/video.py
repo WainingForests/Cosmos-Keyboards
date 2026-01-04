@@ -56,11 +56,10 @@ def create_repl_tag(tag):
 
     # Extended config if global is enabled
     if "disable-global-config" not in tag.attrib:
-        if not 'width' in tag.attrib:
-            css_style = ";".join(
-                [f"{k}:{v}" for k, v in CSS_STYLE.items()]
-            )
-            repl_tag.set("style", css_style)
+        css_style = ";".join(
+            [f"{k}:{v}" for k, v in CSS_STYLE.items()]
+        )
+        repl_tag.set("style", css_style)
 
         if is_video:
             if VIDEO_CONTROLS and not "autoplay" in tag.attrib:

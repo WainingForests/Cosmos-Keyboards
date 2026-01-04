@@ -41,40 +41,23 @@
     )
   }
 
-  /** Returns the physical key pressed (irrespective of OS keyboard settings) */
-  function keyForEvent(event: KeyboardEvent) {
-    if (event.code) {
-      if (event.code == 'Space') return ' '
-      if (event.code == 'Comma') return ','
-      if (event.code.startsWith('Key')) return event.code[3].toLowerCase()
-      if (event.code.startsWith('Digit')) {
-        const digit = Number(event.code[5])
-        if (event.shiftKey) return ')!@#$%^&*('.charAt(digit)
-        return String(digit)
-      }
-    }
-    return event.key
-  }
-
   let recording = false
   let recorded = ''
   function handleKeydown(event: KeyboardEvent) {
-    const pressedKey = keyForEvent(event)
-    if (recording && pressedKey == ' ') {
+    if (recording && event.key == ' ') {
       recording = false
       recorded = recorded.toLowerCase()
       console.log('key press', recorded)
       if (/^[a-f\d]+,[a-f\d]+$/.test(recorded)) {
         event.preventDefault()
-        if (!activeKey) return
         const [row, column] = recorded.split(',').map((n) => (isNaN(+n) ? parseInt(n, 16) : Number(n)))
         matrices.set(activeKey, [row, column])
         matrixState = [matrices, matrixState[1] + 1]
         activeIndex++
       }
       recorded = ''
-    } else if (recording) recorded += pressedKey
-    else if (pressedKey == '!') recording = true
+    } else if (recording) recorded += event.key
+    else if (event.key == '!') recording = true
   }
 
   function undo() {
@@ -92,7 +75,7 @@
 
   function isBootmagic(kbd: string, pos: [number, number] | undefined) {
     if (!pos) return false
-    if (kbd == 'right') return (pos[0] == 7 && pos[1] == 0) || (pos[0] == 0 && pos[1] == 0) // First is QMK, second is ZMK
+    if (kbd == 'right') return pos[0] == 7 && pos[1] == 0
     return pos[0] == 0 && pos[1] == 0
   }
 </script>

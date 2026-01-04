@@ -30,10 +30,15 @@ enumeration('PART', {
   26: 'niz',
   31: 'choc-pumpkin',
   33: 'choc-v1-amoeba-hillside',
-  35: 'skree-norm-mx-ff',
-  36: 'skree-con-mx-ff',
-  38: 'skree-norm-mx-22mm',
-  39: 'skree-con-mx-22mm',
+  35: 'mx-skree-norm-ff',
+  36: 'mx-skree-con-ff',
+  38: 'mx-skree-norm-22mm',
+  39: 'mx-skree-con-22mm',
+  40: 'choc-v1-skree-norm-ff',
+  41: 'choc-v1-skree-con-ff',
+  42: 'skree-skreen',
+  43: 'skree-azoteq-tps65',
+  44: 'mx-skree-skpcb',
 
   // You wouldn't put many of these on a keyboard.
   16: 'ec11',
@@ -52,9 +57,7 @@ enumeration('PART', {
   30: 'thqwgd001',
   32: 'meh01',
   34: 'oled-168x144-1.26in-keydio-vista508',
-  35: 'oled-128x64-0.96-aliexpress',
-  36: 'trackpad-procyon',
-  37: 'joystick-joycon-nintendo',
+  37: 'splitball',
 
   // Old stuff no one should be using.
   110: 'old-mx',
@@ -238,10 +241,10 @@ for (const [part, info] of objEntries(PART_INFO)) {
     const body = Object.entries(info.variants).map(([k, v]) => k + ':' + v.map(i => JSON.stringify(i)).join('|')).join(',')
     code += `export type ${safeCaps(part)}Variant = {${body}}\n`
   }
-  code += `export interface Cuttle${safeCaps(part)}Key extends CuttleBaseKey { type: '${part}', marginX?: number, marginY?: number,`
+  code += `export interface Cuttle${safeCaps(part)}Key extends CuttleBaseKey { type: '${part}',`
   if ('variants' in info) code += `variant: ${safeCaps(part)}Variant,`
   if (PART_INFO[part].keycap) code += 'keycap: IKeycap,'
-  if ('radiusX' in socketSize({ type: part, variant: {} } as any)) code += 'size?: { sides: number },'
+  if ('radius' in socketSize({ type: part, variant: {} } as any)) code += 'size?: { sides: number },'
   code += '}\n'
 }
 code += 'export type CuttleKey = ' + objKeys(PART_INFO).map(p => `Cuttle${safeCaps(p)}Key`).join('|') + '\n'
